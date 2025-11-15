@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="es">
 <head>
 <meta charset="utf-8"/>
@@ -1717,6 +1716,7 @@ body{
 <style>
 button{-webkit-user-select:none;user-select:none;}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 <div class="di-hidden" id="dynamicIsland"><span id="diText">Acción completada</span><div class="bar" id="diBar"></div></div>
@@ -1859,67 +1859,202 @@ button{-webkit-user-select:none;user-select:none;}
 </div>
 </div>
 <!-- jsPDF -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+.panel.actions{
+    margin-top:18px !important;
+}
+</style>
+<style>
+#clearHoldBar{
+  position:absolute;
+  left:0; bottom:0;
+  height:3px; width:0%;
+  background:rgba(255,59,48,0.9);
+  border-radius:2px;
+}
+.vision-bubble{
+  position:absolute;
+  top:-55px;
+  left:50%;
+  transform:translateX(-50%) scale(0.7);
+  padding:10px 18px;
+  background:rgba(255,255,255,0.65);
+  backdrop-filter:blur(22px) saturate(180%);
+  -webkit-backdrop-filter:blur(22px) saturate(180%);
+  border-radius:18px;
+  font-size:13px;
+  color:#000;
+  opacity:0;
+  pointer-events:none;
+  box-shadow:0 8px 20px rgba(0,0,0,0.18);
+  transition:transform 0.3s cubic-bezier(.25,.8,.25,1),
+             opacity 0.25s ease-out;
+}
+.vision-bubble.show{
+  opacity:1;
+  transform:translateX(-50%) scale(1);
+}
+#clearAll{ position:relative; overflow:visible; }
+</style>
+
+
+<!-- ===== BLOQUE JS UNIFICADO (REEMPLAZAR JS VIEJO) ===== -->
 <script>
-/* ===== Utils/State ===== */
-const $ = (id)=>document.getElementById(id);
+/* Utilities */
+const $ = id => document.getElementById(id);
 const fmtHour = () => new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 let plataformas = []; let currentMatricula = ''; let currentEstado = '';
 let currentTab = 'TODAS'; let editingId = null;
-
 const STORAGE_KEY = 'plataformas-global';
-function loadData(){ try{ const raw=localStorage.getItem(STORAGE_KEY); plataformas=raw?JSON.parse(raw):[] }catch(e){ plataformas=[] } }
+
+function loadData(){ try{ const raw=localStorage.getItem(STORAGE_KEY); plataformas = raw ? JSON.parse(raw) : []; }catch(e){ plataformas = []; } }
 function saveData(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(plataformas)); }catch(e){} }
 
-/* ===== Mantener tarjeta a la vista ===== */
-function keepCardInView(){
-  const card = $('flowCard'); if(!card) return;
-  const rect = card.getBoundingClientRect();
-  if(rect.top < 12 || rect.bottom > (window.innerHeight - 12)){
-    card.scrollIntoView({behavior:'smooth', block:'start'});
-  }
-}
+/* Keep card in view */
+function keepCardInView(){ const card = $('flowCard'); if(!card) return; const rect = card.getBoundingClientRect();
+  if(rect.top < 12 || rect.bottom > (window.innerHeight - 12)){ card.scrollIntoView({behavior:'smooth', block:'start'}); } }
 
-/* ===== Efecto pulsado en botones ===== */
+/* Press visual */
 function attachPressedEffect(el){
+  if(!el) return;
   el.addEventListener('pointerdown', (ev)=>{
     const r = el.getBoundingClientRect();
-    const x = ev.clientX - r.left, y = ev.clientY - r.top;
+    const x = Math.round(ev.clientX - r.left), y = Math.round(ev.clientY - r.top);
     el.style.setProperty('--px', x+'px'); el.style.setProperty('--py', y+'px');
     el.classList.add('pressed');
   });
   ['pointerup','pointerleave','pointercancel'].forEach(evt=>{
-    el.addEventListener(evt, ()=>setTimeout(()=>el.classList.remove('pressed'), 220));
+    el.addEventListener(evt, ()=>setTimeout(()=>el.classList.remove('pressed'), 180));
   });
 }
 
-/* ===== Toast ===== */
-function toast(msg='Registro guardado'){
-  showIsland(msg, 2200);
+/* Toast / Dynamic Island (única y corregida) */
+function showIsland(text = "Acción completada", duration = 1600){
+  const island = $('dynamicIsland'); const textEl = $('diText'); const bar = $('diBar');
+  if(!island || !textEl) return;
+  textEl.textContent = text;
+  island.classList.remove('di-hide','di-hidden'); island.classList.add('di-show');
+  if(bar) { bar.style.width = '0%'; setTimeout(()=>bar.style.width='100%', 20); }
+  if(window.__islandTimer) clearTimeout(window.__islandTimer);
+  window.__islandTimer = setTimeout(()=>{
+    island.classList.remove('di-show'); island.classList.add('di-hide');
+    setTimeout(()=>{ island.classList.remove('di-hide'); island.classList.add('di-hidden'); }, 260);
+  }, duration);
 }
 
-/* ===== Pills: contador animado ===== */
-function animateNumber(el, to){
-  const from = Number(el.textContent) || 0;
-  if(from === to) return;
-  const duration = 700, start = performance.now();
-  function step(ts){
-    const p = Math.min(1, (ts - start)/duration);
-    const ease = 1 - Math.pow(1-p, 3); // easeOutCubic
-    el.textContent = Math.round(from + (to - from) * ease);
+/* Toast wrapper */
+function toast(msg='Registro guardado'){ showIsland(msg, 1800); }
+
+/* Animation helpers for numbers */
+function animateNumber(el, target){
+  if(!el) return; const start = Number(el.textContent)||0; const diff = target - start;
+  if(diff === 0) { el.textContent = target; return; }
+  const dur = 420; const startT = performance.now();
+  function step(t){
+    const p = Math.min(1, (t-startT)/dur);
+    el.textContent = Math.round(start + diff * p);
     if(p < 1) requestAnimationFrame(step);
   }
   requestAnimationFrame(step);
-  // brillo pill
-  const pill = el.closest('.pill'); if(pill){ pill.classList.remove('update'); void pill.offsetWidth; pill.classList.add('update'); }
 }
 
-/* ===== Flow ===== */
+/* Pills fill */
+function setFill(pillId, pct){ const el = $(pillId); if(!el) return;
+  requestAnimationFrame(()=>{ el.style.setProperty('--fill', Math.max(0, Math.min(100, pct)).toFixed(0) + '%'); }); }
+
+/* Render compact list */
+function renderCompactList(){
+  const box = $('recordsContainer'); if(!box) return;
+  const data = currentTab === 'TODAS' ? plataformas.slice().reverse() : plataformas.filter(p=>p.estado === currentTab).slice().reverse();
+  box.innerHTML = data.map(it=>`
+    <div class="record" data-id="${it.id}" data-estado="${it.estado}">
+      <div class="rowline">
+        <div class="mat">${it.matricula}</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div class="ts">${it.timestamp||''}</div>
+          <div class="est">${it.estado}</div>
+        </div>
+      </div>
+      <div class="content" style="white-space:pre-wrap; display:none">${(it.contenido||'')}</div>
+      <div class="actions" style="display:none">
+        <button class="action-btn qa" data-action="edit">Editar</button>
+        <button class="action-btn qa" data-action="delete">Eliminar</button>
+      </div>
+    </div>
+  `).join('') || '<div style="opacity:.6;text-align:center;padding:18px">No hay registros</div>';
+}
+
+/* Update all counts + badges */
+function updateAll(){
+  const cargadas = plataformas.filter(p=>p.estado==='CARGADA');
+  const vacias = plataformas.filter(p=>p.estado==='VACÍA');
+  const averiadas = plataformas.filter(p=>p.estado==='AVERIADA');
+  const total = plataformas.length || 1;
+  animateNumber($('cargadasCount'), cargadas.length);
+  animateNumber($('vaciasCount'), vacias.length);
+  animateNumber($('averiadasCount'), averiadas.length);
+  animateNumber($('totalCount'), plataformas.length);
+  setFill('pillCargadas', cargadas.length/total*100);
+  setFill('pillVacias', vacias.length/total*100);
+  setFill('pillAveriadas', averiadas.length/total*100);
+  setFill('pillTotal', 100);
+  $('bAll').textContent = plataformas.length;
+  $('bCargadas').textContent = cargadas.length;
+  $('bVacias').textContent = vacias.length;
+  $('bAveriadas').textContent = averiadas.length;
+  renderCompactList();
+}
+
+/* CRUD helpers */
+function openEditModal(id){
+  const it = plataformas.find(p=>p.id===id); if(!it) return;
+  editingId = id;
+  $('editMatricula').value = it.matricula;
+  $('editEstado').value = it.estado;
+  $('editContenido').value = it.contenido || '';
+  const modal = $('editModal');
+  modal.classList.add('open'); modal.setAttribute('aria-hidden','false');
+  setTimeout(()=>{ modal.querySelector('input, textarea, select')?.focus(); }, 120);
+}
+function closeEditModal(){
+  const modal = $('editModal');
+  modal.classList.remove('open'); modal.setAttribute('aria-hidden','true');
+  editingId = null;
+}
+function saveEdit(){
+  if(editingId==null) return;
+  const idx = plataformas.findIndex(p=>p.id===editingId); if(idx<0) return;
+  const m = $('editMatricula').value.trim().toUpperCase();
+  const e = $('editEstado').value;
+  const c = $('editContenido').value.trim();
+  if(!m){ alert('La matrícula no puede estar vacía'); return; }
+  plataformas[idx].matricula = m; plataformas[idx].estado = e; plataformas[idx].contenido = c;
+  saveData(); updateAll(); closeEditModal(); toast('Registro actualizado');
+}
+function deleteRecord(id){
+  const it = plataformas.find(p=>p.id===id); if(!it) return;
+  if(!confirm('¿Eliminar este registro?')) return;
+  plataformas = plataformas.filter(p=>p.id!==id); saveData(); updateAll(); toast('Registro eliminado');
+}
+
+/* Flow screens */
 let step = 1;
 function showStep(next, dir='forward'){
   const cur = $('s'+step), nxt = $('s'+next); if(!nxt || cur===nxt) return;
   cur.classList.remove('active'); cur.classList.add(dir==='forward' ? 'out-left':'out-right');
-  setTimeout(()=>{ cur.classList.remove('out-left','out-right') }, 360);
+  setTimeout(()=>{ cur.classList.remove('out-left','out-right'); }, 360);
   nxt.classList.add('active');
   $('d1').classList.toggle('active', next===1); $('d2').classList.toggle('active', next===2); $('d3').classList.toggle('active', next===3);
   $('flowTitle').textContent = next===1 ? 'Matrícula' : next===2 ? 'Estado' : 'Contenido';
@@ -1939,7 +2074,7 @@ function chooseEstado(estado){
     if(dup){ alert('Esta matrícula ya fue registrada como VACÍA.'); resetFlow(); return; }
     plataformas.push({ id:Date.now(), matricula:currentMatricula, estado, contenido:'', timestamp:fmtHour() });
     saveData(); updateAll(); flashSuccess(); resetFlow(); keepCardInView();
-  }else{
+  } else {
     showStep(3,'forward');
   }
 }
@@ -1955,104 +2090,9 @@ function registrar(){
   }, 360);
 }
 function resetFlow(){ $('matriculaInput').value=''; $('contenidoInput').value=''; currentMatricula=''; currentEstado=''; showStep(1,'back'); }
+function flashSuccess(){ const active = document.querySelector('.screen.active'); if(active){ active.classList.remove('flash-once'); void active.offsetWidth; active.classList.add('flash-once'); } toast('Registro guardado'); }
 
-/* Flash visual de éxito en pantalla + toast */
-function flashSuccess(){
-  const active = document.querySelector('.screen.active');
-  if(active){ active.classList.remove('flash-once'); void active.offsetWidth; active.classList.add('flash-once'); }
-  toast('Registro guardado');
-}
-
-/* ===== Update UI + Pills + Compact List ===== */
-function updateAll(){
-  const cargadas = plataformas.filter(p=>p.estado==='CARGADA');
-  const vacias   = plataformas.filter(p=>p.estado==='VACÍA');
-  const averiadas= plataformas.filter(p=>p.estado==='AVERIADA');
-  const total = plataformas.length || 1;
-
-  animateNumber($('cargadasCount'), cargadas.length);
-  animateNumber($('vaciasCount'),   vacias.length);
-  animateNumber($('averiadasCount'),averiadas.length);
-  animateNumber($('totalCount'),    plataformas.length);
-
-  setFill('pillCargadas', cargadas.length/total*100);
-  setFill('pillVacias',   vacias.length/total*100);
-  setFill('pillAveriadas',averiadas.length/total*100);
-  setFill('pillTotal',    100);
-
-  // Badges del segmento
-  $('bAll').textContent = plataformas.length;
-  $('bCargadas').textContent = cargadas.length;
-  $('bVacias').textContent = vacias.length;
-  $('bAveriadas').textContent = averiadas.length;
-
-  renderCompactList();
-}
-function setFill(pillId, pct){
-  const el = $(pillId); if(!el) return;
-  requestAnimationFrame(()=>{ el.style.setProperty('--fill', Math.max(0, Math.min(100, pct)).toFixed(0) + '%'); });
-}
-
-function renderCompactList(){
-  const box = $('recordsContainer');
-  const data = currentTab==='TODAS' ? plataformas : plataformas.filter(p=>p.estado===currentTab);
-  if(!box) return;
-  if(!data.length){
-    box.innerHTML = '<div class="empty">No hay registros</div>';
-    return;
-  }
-  const map = {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#039;'};
-  const esc = (s)=>String(s).replace(/[&<>"']/g, m=>map[m]);
-  box.innerHTML = data.map(it => `
-    <div class="record" data-id="${it.id}">
-      <div class="rowline">
-        <span class="mat">${esc(it.matricula)}</span>
-        <span class="est">${esc(it.estado)}</span>
-        <span class="ts">${esc(it.timestamp||'')}</span>
-      </div>
-      ${it.contenido ? `<div class="content" style="white-space:pre-wrap">${esc(it.contenido)}</div>` : ''}
-      <div class="actions">
-        <button type="button" class="action-btn" data-action="edit">Editar</button>
-        <button type="button" class="action-btn" data-action="delete">Eliminar</button>
-      </div>
-    </div>
-  `).join('');
-}
-/* ===== Edit/Delete ===== */
-function openEditModal(id){
-  const it = plataformas.find(p=>p.id===id); if(!it) return;
-  editingId = id;
-  $('editMatricula').value = it.matricula;
-  $('editEstado').value = it.estado;
-  $('editContenido').value = it.contenido || '';
-  $('editModal').classList.add('open'); $('editModal').setAttribute('aria-hidden','false');
-}
-function closeEditModal(){
-  $('editModal').classList.remove('open'); $('editModal').setAttribute('aria-hidden','true');
-  editingId = null;
-}
-function saveEdit(){
-  if(editingId==null) return;
-  const idx = plataformas.findIndex(p=>p.id===editingId);
-  if(idx<0) return;
-  const m = $('editMatricula').value.trim().toUpperCase();
-  const e = $('editEstado').value;
-  const c = $('editContenido').value.trim();
-  if(!m){ alert('La matrícula no puede estar vacía'); return; }
-  plataformas[idx].matricula = m;
-  plataformas[idx].estado = e;
-  plataformas[idx].contenido = c;
-  saveData(); updateAll(); closeEditModal(); toast('Registro actualizado');
-}
-function deleteRecord(id){
-  const it = plataformas.find(p=>p.id===id);
-  if(!it) return;
-  if(!confirm('¿Eliminar este registro?')) return;
-  plataformas = plataformas.filter(p=>p.id!==id);
-  saveData(); updateAll(); toast('Registro eliminado');
-}
-
-/* ===== PDF (badges fijos, 3 en línea) ===== */
+/* PDF generator wrapper (assume jsPDF single include) */
 function generatePDF(){
   const { jsPDF } = window.jspdf || {};
   if(!jsPDF){ alert('No se pudo cargar jsPDF. Revisa tu conexión.'); return; }
@@ -2171,558 +2211,113 @@ function generatePDF(){
   doc.save('reporte_plataformas_'+exportDateForName+'.pdf');
 }
 
-/* ===== Init ===== */
-window.addEventListener('DOMContentLoaded', () => {
-  // Flow
-  $('toS2').addEventListener('click', nextFromS1);
-  $('back1').addEventListener('click', ()=>{ showStep(1,'back'); keepCardInView(); });
-  $('back2').addEventListener('click', ()=>{ showStep(2,'back'); keepCardInView(); });
-  $('btnCargada').addEventListener('click', ()=>chooseEstado('CARGADA'));
-  $('btnVacia').addEventListener('click',   ()=>chooseEstado('VACÍA'));
-  $('btnAveriada').addEventListener('click',()=>chooseEstado('AVERIADA'));
-  $('btnRegistrar').addEventListener('click', registrar);
-  $('genPdf').addEventListener('click', ()=>{ keepCardInView(); generatePDF(); });
-  
-$('clearAll').addEventListener('pointerdown', ()=>{
-  window.__clearHold = setTimeout(()=>{
-    if(!plataformas.length){
-      showIsland('No hay registros para limpiar');
-      return;
-    }
-    plataformas=[]; saveData(); updateAll(); resetFlow(); keepCardInView();
-    showIsland('Registros limpiados');
-  }, 900);
-});
-['pointerup','pointerleave','pointercancel'].forEach(ev=>{
-  $('clearAll').addEventListener(ev, ()=> clearTimeout(window.__clearHold));
-});
+/* Flash / toast already covered */
 
-  // Segmented filter
-  document.querySelectorAll('.segment button').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      document.querySelectorAll('.segment button').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      currentTab = btn.getAttribute('data-tab');
-      renderCompactList();
-    });
-  });
-
-  // Delegación de acciones Edit/Delete
-  $('recordsContainer').addEventListener('click', (e)=>{
-    const btn = e.target.closest('button[data-action]'); if(!btn) return;
-    const rec = e.target.closest('.record'); const id = rec ? Number(rec.getAttribute('data-id')) : null;
-    if(!id) return;
-    const action = btn.getAttribute('data-action');
-    if(action==='edit'){ openEditModal(id); }
-    else if(action==='delete'){ deleteRecord(id); }
-  });
-
-  // Modal edición
-  $('editCancel').addEventListener('click', closeEditModal);
-  $('editSave').addEventListener('click', saveEdit);
-  $('editModal').addEventListener('click', (e)=>{ if(e.target.id==='editModal') closeEditModal(); });
-
-  // Efecto pulsado en todos los botones
-  document.querySelectorAll('button').forEach(attachPressedEffect);
-
-  // Datos
-  loadData(); updateAll();
-});
-</script>
-<script>
-/* Microinteractions typing */
-function addTypingMicroInteraction(id){
-  const el=document.getElementById(id);
-  if(!el) return;
-  el.addEventListener('input', ()=>{
-    el.classList.remove('typing-pulse');
-    void el.offsetWidth;
-    el.classList.add('typing-pulse');
-  });
-}
-window.addEventListener('DOMContentLoaded', ()=>{
-  addTypingMicroInteraction('matriculaInput');
-  addTypingMicroInteraction('contenidoInput');
-});
-</script><script>
-/* ===== Flow Visual Enhancement JS ===== */
-function setStepVisual(current){
-  const titles = document.querySelectorAll('.step-title');
-  titles.forEach(t=>{
-    t.classList.remove('active','inactive');
-    if(t.dataset.step == current){
-      t.classList.add('active');
-    } else {
-      t.classList.add('inactive');
-    }
-  });
-
-  const panels = document.querySelectorAll('.step-panel');
-  panels.forEach(p=>{
-    p.classList.remove('visible');
-    if(p.dataset.step == current){
-      setTimeout(()=>p.classList.add('visible'),50);
-    }
-  });
-}
-
-/* Auto highlight state buttons */
-<!-- old expansion removed -->
-  if(e.target.classList.contains('state-button')){
-    document.querySelectorAll('.state-button').forEach(b=>b.classList.remove('selected'));
-    e.target.classList.add('selected');
+/* Hold-to-clear logic */
+(function installClearHold(){
+  const clearBtn = $('clearAll'); if(!clearBtn) return;
+  let clearTimer = null; let progressBar = null;
+  // create visual bar inside button
+  function ensureBar(){
+    if(progressBar) return progressBar;
+    progressBar = document.createElement('div');
+    progressBar.id = 'clearHoldBar';
+    progressBar.style.position = 'absolute';
+    progressBar.style.left = '0'; progressBar.style.bottom = '0'; progressBar.style.height = '3px';
+    progressBar.style.width = '0%'; progressBar.style.background = 'rgba(255,59,48,0.95)';
+    progressBar.style.borderRadius = '2px';
+    progressBar.style.transition = 'width .08s linear';
+    clearBtn.style.position = 'relative';
+    clearBtn.appendChild(progressBar);
+    return progressBar;
   }
-});
-
-/* Call after DOM ready */
-document.addEventListener('DOMContentLoaded', ()=>{
-  // Assuming step 1 on load
-  setStepVisual("1");
-});
-</script><script>
-/* Pulsar contador cuando cambia */
-function pulseCounter(id){
-  const el=document.getElementById(id);
-  if(!el) return;
-  el.classList.remove('pill-val-update');
-  void el.offsetWidth;
-  el.classList.add('pill-val-update');
-}
-</script><script>
-/* Auto-focus y auto-scroll en pasos */
-document.addEventListener('DOMContentLoaded', ()=>{
-  const inputs=document.querySelectorAll('input, textarea');
-  inputs.forEach(el=>{
-    el.addEventListener('focus', ()=>{
-      setTimeout(()=>{el.scrollIntoView({behavior:'smooth', block:'center'});},120);
-    });
-  });
-});
-
-/* Validación suave */
-function markError(id){
-  const el=document.getElementById(id);
-  if(!el) return;
-  el.classList.add('input-error');
-  setTimeout(()=>el.classList.remove('input-error'),400);
-}
-</script><script>
-/* === Step Circles Dynamic JS === */
-
-function updateStepCircles(step){
-  const circles=document.querySelectorAll('.step-circle');
-  circles.forEach((c,i)=>{
-    const idx=i+1;
-    c.classList.remove('active','done');
-    if(idx < step) c.classList.add('done');
-    setTimeout(()=>{ if(idx === step){ c.classList.add('active'); } }, 120);
-  });
-}
-
-document.addEventListener('DOMContentLoaded', ()=>{
-  updateStepCircles(1);
-});</script><script>
-/* === Line Animation === */
-function updateStepLine(step){
-  const fill=document.querySelector('.step-line-fill');
-  if(!fill) return;
-  const percent = (step-1)/2*100; // for 3 steps
-  fill.style.width = percent + "%";
-}
-
-const _origUpdateCircles = updateStepCircles;
-updateStepCircles = function(step){
-  _origUpdateCircles(step);
-  setTimeout(()=>updateStepLine(step),150);
-};
-
-document.addEventListener('DOMContentLoaded', ()=>{
-  updateStepLine(1);
-});
-</script><script>
-/* ===== Premium Dots Dynamic Control ===== */
-function updateDots(step){
-  const dots=document.querySelectorAll('.steps .dot');
-  dots.forEach((d,i)=>{
-    const n=i+1;
-    d.classList.remove('active','done');
-    if(n<step) d.classList.add('done');
-    if(n===step) d.classList.add('active');
-  });
-}
-
-document.addEventListener('DOMContentLoaded', ()=>updateDots(1));
-</script><script>
-/* ===== SECUENCIA SINCRONIZADA PANEL → DOT ===== */
-const originalUpdateDots = updateDots;
-
-updateDots = function(step){
-  /* Espera a que el panel haga su transición antes de cambiar los dots */
-  setTimeout(()=>{
-    originalUpdateDots(step);
-  }, 180); /* sincronía suave */
-};
-</script><script>
-/* ===== LINEA ANIMADA CONTROL ===== */
-function updateLine(step){
-  const fill=document.querySelector('.steps-line-fill');
-  if(!fill) return;
-  const percent = (step-1)/2*100;
-  fill.style.width = percent + "%";
-}
-
-/* Sync with dots */
-const __orig = updateDots;
-updateDots = function(step){
-  __orig(step);
-  setTimeout(()=>updateLine(step), 120);
-};
-
-document.addEventListener('DOMContentLoaded', ()=>updateLine(1));
-</script><script>
-/* ==== Atenuación de línea al retroceder ==== */
-const __origUpdateLine = updateLine;
-updateLine = function(step){
-  const fill=document.querySelector('.steps-line-fill');
-  if(!fill) return;
-  const currentWidth = parseFloat(fill.style.width)||0;
-  const target = (step-1)/2*100;
-
-  if(target < currentWidth){
-    fill.style.transition = "opacity .25s ease-out, width .35s cubic-bezier(.25,.8,.25,1)";
-    fill.style.opacity = "0.35";
-    setTimeout(()=>{
-      fill.style.width = target + "%";
-      setTimeout(()=>fill.style.opacity="1", 260);
-    },60);
-  } else {
-    fill.style.transition = "width .35s cubic-bezier(.25,.8,.25,1)";
-    fill.style.width = target + "%";
+  function startHold(){
+    if(!plataformas.length){ showIsland('No hay registros para limpiar',1200); return; }
+    const bar = ensureBar(); bar.style.width='0%';
+    let start = performance.now();
+    clearTimer = setInterval(()=>{
+      const p = Math.min(1, (performance.now()-start)/1400);
+      bar.style.width = Math.round(p*100)+'%';
+      if(p >= 1){
+        // confirmed clear
+        clearInterval(clearTimer); clearTimer = null;
+        plataformas = []; saveData(); updateAll(); bar.style.width='0%';
+        showIsland('Registros eliminados',1400);
+      }
+    }, 80);
   }
-};
-</script>
-<script>
-document.addEventListener('click', ev=>{
-  const row = ev.target.closest('.record');
-  if(!row) return;
-  row.classList.toggle('expanded');
-});
-</script>
-<script>
-document.addEventListener('DOMContentLoaded',()=>{
-  const wrap = document.getElementById('recordsContainer');
-  if(wrap){
-    wrap.classList.add('records-collapsed');
-  }
+  function cancelHold(){ if(clearTimer){ clearInterval(clearTimer); clearTimer = null; const b = $('clearHoldBar'); if(b) b.style.width='0%'; showIsland('Acción cancelada',900); } }
+  clearBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); startHold(); });
+  ['pointerup','pointercancel','pointerleave'].forEach(ev => clearBtn.addEventListener(ev, cancelHold));
+})();
 
-  let showingAll = false;
-
-  const btn = document.createElement('button');
-  btn.id = 'toggleAllBtn';
-  btn.textContent = 'Ver todas';
-  wrap.parentNode.insertBefore(btn, wrap);
-
-  btn.addEventListener('click', ()=>{
-    showingAll = !showingAll;
-    if(showingAll){
-      wrap.classList.remove('records-collapsed');
-      btn.textContent = 'Ocultar';
-    } else {
-      wrap.classList.add('records-collapsed');
-      btn.textContent = 'Ver todas';
-    }
-  });
-});
-</script>
-<script>
-<!-- old expansion removed -->
-  const rec = e.target.closest('.record');
-  if(!rec) return;
-  rec.classList.toggle('expanded');
-});
-</script>
-<script>
-// Expansión inteligente: no cerrar al pulsar Editar o Eliminar
-document.addEventListener('click', e=>{
-
-  // Si se pulsa botón de acción → no expandir/cerrar
-  if(e.target.closest('.actions button')){
+/* Compact list click delegation (edit/delete/toggle expand) */
+document.addEventListener('click', (e)=>{
+  const qaBtn = e.target.closest('.qa');
+  if(qaBtn){
+    const rec = e.target.closest('.record'); if(!rec) return;
+    const id = Number(rec.getAttribute('data-id')); const act = qaBtn.getAttribute('data-action');
+    if(act === 'edit') { openEditModal(id); return; }
+    if(act === 'delete') { deleteRecord(id); return; }
     return;
   }
-
-  // Si se pulsa un registro → expandir/cerrar
-  const rec = e.target.closest('.record');
-  if(rec){
-    rec.classList.toggle('expanded');
+  // Toggle record expand when clicking row (except when clicking action buttons)
+  const row = e.target.closest('.record');
+  if(row && !e.target.closest('.qa') && !e.target.closest('.action-btn')) {
+    const content = row.querySelector('.content'); const actions = row.querySelector('.actions');
+    const expanded = row.classList.toggle('expanded');
+    if(content) content.style.display = expanded? 'block' : 'none';
+    if(actions) actions.style.display = expanded? 'flex' : 'none';
   }
-
 });
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', ()=>{
-  const wrap = $('recordsContainer');
-  if(!wrap) return;
 
-  // Modo "últimas 3"
-  if(!wrap.classList.contains('records-collapsed')){
-    wrap.classList.add('records-collapsed');
-    const btn = document.createElement('button');
-    btn.id='toggleAllBtn'; btn.textContent='Ver todas';
-    wrap.parentNode.insertBefore(btn, wrap);
-    let showingAll = false;
+/* Init: wire up listeners once DOM loaded */
+window.addEventListener('DOMContentLoaded', ()=>{
+  loadData(); updateAll();
+
+  // Attach pressed effect to interactive elements
+  document.querySelectorAll('.btn, .action-btn, .qa, .menu-trigger').forEach(attachPressedEffect);
+
+  // Flow listeners
+  $('toS2')?.addEventListener('click', nextFromS1);
+  $('back1')?.addEventListener('click', ()=>{ showStep(1,'back'); keepCardInView(); });
+  $('back2')?.addEventListener('click', ()=>{ showStep(2,'back'); keepCardInView(); });
+  $('btnCargada')?.addEventListener('click', ()=>chooseEstado('CARGADA'));
+  $('btnVacia')?.addEventListener('click', ()=>chooseEstado('VACÍA'));
+  $('btnAveriada')?.addEventListener('click', ()=>chooseEstado('AVERIADA'));
+  $('btnRegistrar')?.addEventListener('click', registrar);
+
+  // Modal edit buttons
+  $('editCancel')?.addEventListener('click', closeEditModal);
+  $('editSave')?.addEventListener('click', saveEdit);
+  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ closeEditModal(); } });
+
+  // Segment filter buttons in compact header
+  document.querySelectorAll('.compact-header [data-tab]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      showingAll = !showingAll;
-      wrap.classList.toggle('records-collapsed', !showingAll);
-      btn.textContent = showingAll ? 'Ocultar' : 'Ver todas';
+      document.querySelectorAll('.compact-header [data-tab]').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTab = btn.getAttribute('data-tab') || 'TODAS';
+      updateAll();
     });
-  }
-
-  // Expandir/contraer registro tocando la fila (pero no los botones)
-  wrap.addEventListener('click', (e)=>{
-    const qaBtn = e.target.closest('.qa');
-    if(qaBtn) return; // las acciones se manejan abajo
-
-    const row = e.target.closest('.record');
-    if(!row) return;
-    row.classList.toggle('active');
   });
 
-  // Acciones rápidas
-  wrap.addEventListener('click', (e)=>{
-    const btn = e.target.closest('.qa');
-    if(!btn) return;
-    const rec = e.target.closest('.record');
-    const id = rec ? Number(rec.getAttribute('data-id')) : null;
-    if(!id) return;
+  // genPdf (wraps generatePDF)
+  $('genPdf')?.addEventListener('click', ()=>{ keepCardInView(); generatePDF(); });
 
-    const act = btn.getAttribute('data-action');
-    if(act==='edit'){ openEditModal(id); return; }
-    if(act==='delete'){ deleteRecord(id); return; }
-    if(act==='ask'){
-      const q = prompt('Escribe tu pregunta sobre este registro:');
-      if(q && q.trim()){
-        toast('Pregunta enviada'); // Simple feedback; integra aquí tu canal real si es necesario
-      }
-      return;
-    }
-  });
+  // clearAll listeners are installed in the self-invoked installer above
+
+  // small safety: prevent duplicate jsPDF loads (console warn)
+  const scripts = Array.from(document.querySelectorAll('script[src*="jspdf"]'));
+  if(scripts.length > 1) console.warn('jsPDF aparece cargado más de una vez - deja sólo una carga para reducir peso.');
+
+  // keep header shadow on scroll
+  window.addEventListener('scroll', ()=>{ if(window.scrollY>10) document.body.classList.add('scrolled'); else document.body.classList.remove('scrolled'); });
+
 });
 </script>
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-  const btn = document.getElementById('toggleAllBtn');
-  const wrap = document.getElementById('recordsContainer');
-  if(btn && wrap){
-    // Ensure collapsed by default
-    wrap.classList.add('records-collapsed');
-    btn.addEventListener('click', function(){
-      const collapsed = wrap.classList.toggle('records-collapsed');
-      btn.textContent = collapsed ? 'Ver todas' : 'Ocultar';
-    });
-  }
-});
-</script>
-<script>
-function showIsland(text, duration=2200){
-  const island=document.getElementById('dynamicIsland');
-  const t=document.getElementById('diText');
-  const bar=document.getElementById('diBar');
-  if(!island||!t||!bar) return;
-  t.textContent=text;
-  bar.style.width='0%';
-  island.classList.remove('di-hide');
-  island.classList.remove('di-hidden');
-  island.classList.add('di-show');
+<!-- ===== FIN BLOQUE JS UNIFICADO ===== -->
 
-  const start=performance.now();
-  function step(ts){
-    const p=Math.min(1,(ts-start)/duration);
-    bar.style.width = Math.round(p*100)+'%';
-    if(p<1) requestAnimationFrame(step);
-  }
-  requestAnimationFrame(step);
-
-  clearTimeout(window.__islandTimer);
-  window.__islandTimer=setTimeout(()=>{
-    island.classList.remove('di-show'); island.classList.add('di-hide');
-    setTimeout(()=>{ island.classList.remove('di-hide'); island.classList.add('di-hidden'); }, 260);
-  }, duration);
-}, 2200);
-});
-function toggleMenu(){
-    const m=document.querySelector('.menu-apple');
-    m.classList.toggle('show');
-}
-</script>
-<script>
-(function(){
-  const btn=document.getElementById('moreActionsBtn');
-  const menu=document.getElementById('moreActionsMenu');
-  if(!btn||!menu) return;
-
-  function openMenu(){
-    menu.classList.add('show');
-    btn.setAttribute('aria-expanded','true');
-    menu.setAttribute('aria-hidden','false');
-  }
-  function closeMenu(){
-    menu.classList.remove('show');
-    btn.setAttribute('aria-expanded','false');
-    menu.setAttribute('aria-hidden','true');
-  }
-  btn.addEventListener('click', (e)=>{
-    e.stopPropagation();
-    if(menu.classList.contains('show')) closeMenu(); else openMenu();
-  });
-  document.addEventListener('click', ()=>closeMenu());
-  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeMenu(); });
-
-  // Actions
-  menu.addEventListener('click', (e)=>{
-    const it=e.target.closest('.item'); if(!it) return;
-    const act=it.getAttribute('data-act');
-    if(act==='pdf'){ const b=document.getElementById('genPdf'); if(b) b.click(); showIsland('Generando PDF…', 1600); }
-    if(act==='csv'){ exportCSV(); showIsland('Exportando CSV…', 1600); }
-    if(act==='clear'){ const b=document.getElementById('clearAll'); if(b) b.click(); }
-    closeMenu();
-  });
-
-  // Simple CSV export from plataformas[]
-  window.exportCSV = function(){
-    try{
-      const rows = [['matricula','estado','contenido','hora']].concat(
-        (window.plataformas||[]).map(p=>[p.matricula,p.estado,(p.contenido||'').replace(/\n/g,' '),p.timestamp||''])
-      );
-      const csv = rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(',')).join('\n');
-      const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-      const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='plataformas.csv'; a.click();
-    }catch(e){ alert('No se pudo exportar CSV'); }
-  }
-})();
-
-function showIsland(text = "Acción completada", duration = 1800) {
-  const island = document.getElementById("dynamicIsland");
-  const textEl = document.getElementById("diText");
-  const bar = document.getElementById("diBar");
-  if (!island) return;
-  textEl.textContent = text;
-  island.classList.remove("di-hide");
-  island.classList.add("di-show");
-  bar.style.width = "0%";
-  setTimeout(() => bar.style.width = "100%", 20);
-  setTimeout(() => {
-    island.classList.remove("di-show");
-    island.classList.add("di-hide");
-  }, duration);
-}
-
-</script>
-<script>
-window.addEventListener('scroll', ()=>{
-    if(window.scrollY>10){
-        document.body.classList.add('scrolled');
-    } else {
-        document.body.classList.remove('scrolled');
-    }
-});
-</script>
-<style>
-.panel.actions{
-    margin-top:18px !important;
-}
-</style>
-<style>
-#clearHoldBar{
-  position:absolute;
-  left:0; bottom:0;
-  height:3px; width:0%;
-  background:rgba(255,59,48,0.9);
-  border-radius:2px;
-}
-.vision-bubble{
-  position:absolute;
-  top:-55px;
-  left:50%;
-  transform:translateX(-50%) scale(0.7);
-  padding:10px 18px;
-  background:rgba(255,255,255,0.65);
-  backdrop-filter:blur(22px) saturate(180%);
-  -webkit-backdrop-filter:blur(22px) saturate(180%);
-  border-radius:18px;
-  font-size:13px;
-  color:#000;
-  opacity:0;
-  pointer-events:none;
-  box-shadow:0 8px 20px rgba(0,0,0,0.18);
-  transition:transform 0.3s cubic-bezier(.25,.8,.25,1),
-             opacity 0.25s ease-out;
-}
-.vision-bubble.show{
-  opacity:1;
-  transform:translateX(-50%) scale(1);
-}
-#clearAll{ position:relative; overflow:visible; }
-</style>
-<script>
-(function(){
-  const btn=document.getElementById('clearAll');
-  if(!btn) return;
-
-  let bar=document.createElement('div');
-  bar.id="clearHoldBar";
-  btn.appendChild(bar);
-
-  let bubble=document.createElement('div');
-  bubble.className="vision-bubble";
-  bubble.textContent="Mantén pulsado para eliminar";
-  btn.appendChild(bubble);
-
-  let timer=null;
-  const hold=3000;
-
-  function startHold(){
-    bubble.classList.remove('show');
-    bar.style.transition="none";
-    bar.style.width="0%";
-    void bar.offsetWidth;
-    bar.style.transition=`width ${hold}ms linear`;
-    bar.style.width="100%";
-    timer=setTimeout(()=>{
-      if(!window.plataformas) window.plataformas=[];
-      plataformas.length=0;
-      try{ saveData(); }catch(e){}
-      try{ updateAll(); }catch(e){}
-      try{ resetFlow(); }catch(e){}
-      try{ keepCardInView(); }catch(e){}
-      try{ toast('Registros eliminados'); }catch(e){}
-    }, hold);
-  }
-
-  function cancelHold(){
-    if(timer){
-      clearTimeout(timer);
-      timer=null;
-      bubble.classList.add('show');
-      setTimeout(()=>bubble.classList.remove('show'),3000);
-    }
-    bar.style.transition="none";
-    bar.style.width="0%";
-  }
-
-  btn.addEventListener('mousedown', ()=>bubble.classList.add('show'));
-  btn.addEventListener('touchstart', ()=>bubble.classList.add('show'));
-
-  btn.addEventListener('mouseup', ()=>bubble.classList.remove('show'));
-  btn.addEventListener('touchend', ()=>bubble.classList.remove('show'));
-
-  btn.addEventListener('mousedown', startHold);
-  btn.addEventListener('touchstart', startHold);
-  btn.addEventListener('mouseup', cancelHold);
-  btn.addEventListener('mouseleave', cancelHold);
-  btn.addEventListener('touchend', cancelHold);
-  btn.addEventListener('touchcancel', cancelHold);
-})();
-</script>
 </body>
 </html>
 <style>
@@ -2910,5 +2505,3 @@ body{
 #dynamicIsland.di-hide {
   animation: islandShrink .28s ease-out forwards !important;
 }
-
-</style>
