@@ -1717,7 +1717,70 @@ body{
 button{-webkit-user-select:none;user-select:none;}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-</head>
+<style>
+/* === FLOWCARD FULL IMPROVEMENTS PACK === */
+
+/* Bigger touch targets */
+.states .btn{
+  min-height:56px !important;
+  padding:16px !important;
+  font-size:17px !important;
+}
+
+/* Card‑style state buttons */
+.states .btn{
+  border-radius:16px !important;
+  border:2px solid rgba(0,0,0,0.06) !important;
+}
+.states .btn.selected{
+  background:rgba(10,132,255,0.15) !important;
+  border-color:#0A84FF !important;
+  transform:scale(1.04) !important;
+}
+.states .btn.selected::after{
+  content:"✓";
+  margin-left:8px;
+  color:#0A84FF;
+  font-weight:700;
+}
+
+/* Sticky back button */
+#flowCard .btn-secondary{
+  position:relative;
+  margin-top:24px !important;
+}
+
+/* Slide transitions */
+.screen{
+  transition:opacity .35s ease, transform .35s ease !important;
+}
+
+/* Autofocus highlight */
+input:focus, textarea:focus{
+  outline:none;
+  box-shadow:0 0 0 4px rgba(10,132,255,0.25) !important;
+}
+
+/* Thumb‑friendly spacing */
+.screen{
+  padding-bottom:40px !important;
+}
+</style><style>
+/* === Smooth fluid transitions between steps === */
+.screen{
+  transition:
+    opacity .45s cubic-bezier(.25,.8,.25,1),
+    transform .45s cubic-bezier(.25,.8,.25,1) !important;
+}
+.screen.active{
+  opacity:1 !important;
+  transform:translateX(0) scale(1) !important;
+}
+.screen:not(.active){
+  opacity:0 !important;
+  transform:translateX(22px) scale(.985) !important;
+}
+</style></head>
 <body>
 <div class="di-hidden" id="dynamicIsland"><span id="diText">Acción completada</span><div class="bar" id="diBar"></div></div>
 <div class="app">
