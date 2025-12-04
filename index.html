@@ -215,12 +215,88 @@ button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
   display:flex; gap:8px; justify-content:center; flex-wrap:wrap;
   border-top-left-radius:var(--radius); border-top-right-radius:var(--radius);
 }
-.segment{display:inline-flex; background:#F3F4F6; border:1px solid rgba(0,0,0,0.06); border-radius:999px; padding:4px}
-.segment button{
-  border:0; background:transparent; padding:8px 12px; border-radius:999px; font-weight:500; color:#4B5563;
+/* Compact segmented filter: Todas / Cargadas / Vacías / Averiadas */
+.segment{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  padding:4px;
+  background:transparent;
+  border:0;
+  justify-content:center;
 }
-.segment button.active{background:#FFFFFF; border:1px solid rgba(0,0,0,0.06); color:var(--text)}
-.segment .badge{font-weight:500; margin-left:6px; color:#0A84FF}
+
+.segment button{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:5px 10px;
+  border-radius:999px;
+  border:1px solid rgba(0,0,0,0.04);
+  background:rgba(255,255,255,0.7);
+  font-size:13px;
+  font-weight:500;
+  color:#4B5563;
+  box-shadow:0 1px 2px rgba(0,0,0,0.04);
+  min-height:0;
+}
+
+/* Small colored dot per estado */
+.segment button::before{
+  content:"";
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#D0D3D8;
+}
+
+.segment button[data-tab="TODAS"]::before{
+  background:linear-gradient(135deg,#0A84FF,#00B487);
+}
+
+.segment button[data-tab="CARGADA"]::before{
+  background:#0A8369;
+}
+
+.segment button[data-tab="VACÍA"]::before{
+  background:#1564C0;
+}
+
+.segment button[data-tab="AVERIADA"]::before{
+  background:#8F6200;
+}
+
+/* Active state: subtle pill highlight */
+.segment button.active{
+  background:rgba(10,132,255,0.10);
+  border-color:rgba(10,132,255,0.35);
+  color:#111418;
+  box-shadow:0 0 0 1px rgba(10,132,255,0.18);
+}
+
+/* Badge: tiny counter bubble */
+.segment .badge{
+  margin-left:2px;
+  padding:1px 6px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:600;
+  background:rgba(0,0,0,0.04);
+  color:#0A84FF;
+}
+
+/* Mobile: stretch to full width but keep low height */
+@media (max-width:600px){
+  .segment{
+    justify-content:space-between;
+  }
+  .segment button{
+    flex:1 1 auto;
+    justify-content:flex-start;
+    padding-inline:8px;
+  }
+}
 .compact-
 .record{
   border:1px solid rgba(0,0,0,0.06); border-radius:12px; padding:12px 12px; margin-bottom:10px; background:#fff;
@@ -1359,21 +1435,7 @@ body{
 }
 
 </style>
-<style>
-/* Compactar registros debajo de los contadores */
-.record{
-  padding:10px 12px !important;
-  margin-bottom:10px !important;
-}
-.record .meta .item{
-  font-size:13px !important;
-  margin-bottom:2px !important;
-}
-.record .content{
-  font-size:13px !important;
-  margin-top:4px !important;
-}
-</style>
+
 <style>
 /* ================= Responsive ajustes ================= */
 
@@ -1457,166 +1519,9 @@ body{
   }
 }
 </style>
-<style>
-/* ===== Ultra‑compact Apple "list row" style ===== */
-.record{
-  padding:8px 12px;
-  background:#fff;
-  border-bottom:1px solid rgba(0,0,0,.06);
-  border-radius:0;
-  margin:0;
-  display:flex;
-  flex-direction:column;
-  gap:2px;
-  transition:background .2s;
-}
-.record:last-child{border-bottom:0}
-.record:hover{background:#F7F7F9}
 
-.record .meta{
-  display:flex;
-  flex-direction:row;
-  justify-content:space-between;
-  font-size:13px;
-  font-weight:500;
-}
-.record .meta .item{
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  max-width:45%;
-}
 
-.record .content,
-.record .actions{
-  display:none;
-}
 
-.record.expanded .content{
-  display:block;
-  padding-top:4px;
-  font-size:12.5px;
-  opacity:.85;
-}
-.record.expanded .actions{
-  display:flex;
-  justify-content:flex-end;
-  gap:12px;
-  padding-top:6px;
-}
-
-.record.expanded{
-  background:#fff;
-}
-</style>
-<style>
-/* Contenedor de registros con modo colapsado */
-.records-collapsed .record{
-  display:none;
-}
-.records-collapsed .record:nth-last-child(-n+3){
-  display:flex;
-}
-
-/* Botón "Ver todas / Ocultar" */
-#toggleAllBtn{
-  width:100%;
-  margin:12px 0;
-  padding:10px 14px;
-  border-radius:12px;
-  border:1px solid rgba(0,0,0,.1);
-  background:#fff;
-  font-size:14px;
-  font-weight:500;
-  text-align:center;
-  cursor:pointer;
-  transition:background .2s;
-}
-#toggleAllBtn:hover{
-  background:#F1F1F4;
-}
-</style>
-<style>
-/* ===== Version C+D — MICRO‑BURBUJAS LISTADAS ===== */
-
-/* Estilo general de la burbuja */
-.record{
-  background:#FFFFFF;
-  border-radius:14px;
-  border:1px solid rgba(0,0,0,.08);
-  padding:10px 14px;
-  margin-bottom:10px;
-  box-shadow:0 1px 3px rgba(0,0,0,.06);
-  display:flex;
-  flex-direction:column;
-  gap:3px;
-  transition:background .2s ease, box-shadow .2s ease;
-}
-
-/* Pequeña elevación al tocar */
-.record:active{
-  transform:scale(0.98);
-}
-
-/* Primera línea: matrícula */
-.record .meta .item:nth-child(1){
-  font-size:14px;
-  font-weight:600;
-  color:#111;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-/* Segunda línea: estado + fecha */
-.record .meta .item:nth-child(2){
-  font-size:12.5px;
-  font-weight:500;
-  color:#666;
-  opacity:.8;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-/* Ocultar contenido por defecto */
-.record .content,
-.record .actions{
-  display:none;
-}
-
-/* Burbuja expandida */
-.record.expanded{
-  background:#FFFFFF;
-  box-shadow:0 4px 14px rgba(0,0,0,.12);
-}
-
-/* Contenido visible al expandir, estilo burbuja interna */
-.record.expanded .content{
-  display:block;
-  margin-top:6px;
-  font-size:13px;
-  padding:8px 10px;
-  background:#F8F8FA;
-  border-radius:10px;
-  color:#333;
-  line-height:1.35;
-}
-
-/* Acciones dentro de la burbuja */
-.record.expanded .actions{
-  display:flex;
-  justify-content:flex-end;
-  gap:10px;
-  margin-top:8px;
-}
-
-.record.expanded .actions button{
-  font-size:12px;
-  padding:6px 12px;
-  border-radius:8px;
-}
-</style>
 <style>
 .record.expanded .actions{
   display:flex !important;
@@ -1625,77 +1530,8 @@ body{
   display:inline-flex !important;
 }
 </style>
-<style>
-/* Asegurar que las acciones aparecen */
-.record.expanded .actions{
-  display:flex !important;
-}
 
-/* Botones estilo Apple */
-.record.expanded .actions button{
-  font-size:12px;
-  padding:6px 12px;
-  border-radius:8px;
-  background:#FFFFFF;
-  border:1px solid rgba(0,0,0,.08);
-  transition:background .2s;
-}
-.record.expanded .actions button:hover{
-  background:#F2F2F2;
-}
-</style>
-<style>
-/* ==== Compact records + last 3 preview (no rompe el flujo) ==== */
-#recordsContainer.records-collapsed .record{display:none;}
-#recordsContainer.records-collapsed .record:nth-last-child(-n+3){display:block;}
 
-/* Botón toggle */
-#toggleAllBtn{
-  width:100%; margin:8px 0 6px; padding:8px 12px;
-  border-radius:12px; border:1px solid rgba(0,0,0,.10);
-  background:#FFFFFF; font-size:14px; font-weight:500;
-  cursor:pointer; transition:background .18s ease;
-}
-#toggleAllBtn:hover{ background:#F4F5F7; }
-
-/* Fila compacta estilo iOS */
-.record{
-  padding:10px 12px; border:1px solid rgba(0,0,0,.06); border-radius:12px;
-  margin-bottom:8px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.04);
-}
-.record .rowline{
-  display:flex; gap:8px; align-items:center; justify-content:space-between;
-  font-size:13px; font-weight:600; color:#1C1F24;
-}
-.rowline .mat{max-width:46%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-.rowline .est{opacity:.85;}
-.rowline .ts{font-weight:500; opacity:.65;}
-
-/* Contenido breve, colapsado por defecto */
-.record .content{display:none; margin-top:6px; font-size:12.5px; color:#2B2F34; opacity:.9;}
-
-/* Barra de acciones rápida (aparece al activar) */
-.quick-actions{
-  display:none; gap:8px; justify-content:flex-end; margin-top:8px;
-}
-.quick-actions .qa{
-  padding:6px 10px; border-radius:10px; border:1px solid rgba(0,0,0,.08);
-  background:#F7F8FA; font-size:12.5px; font-weight:600;
-}
-.quick-actions .qa:hover{ background:#EEF0F4; }
-
-/* Estado activo */
-.record.active{ box-shadow:0 6px 18px rgba(0,0,0,.10); }
-.record.active .content{ display:block; }
-.record.active .quick-actions{ display:flex; }
-
-/* Responsive */
-@media (max-width:600px){
-  .record{ padding:10px 10px; }
-  .rowline{ font-size:13px; }
-  .quick-actions .qa{ font-size:12px; padding:6px 9px; }
-}
-</style>
 <style>
 /* Compact row visual */
 .rowline{display:flex;align-items:center;justify-content:space-between;gap:8px;}
@@ -1780,7 +1616,199 @@ input:focus, textarea:focus{
   opacity:0 !important;
   transform:translateX(22px) scale(.985) !important;
 }
-</style></head>
+</style>
+<!-- --- Start: High-DPI / Retina improvements --- -->
+<style>
+html, body {
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
+}
+img, picture, video {
+  max-width:100%;
+  height:auto;
+  display:block;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+.bg-retina {
+  background-size: cover;
+  background-position: center;
+}
+svg { width: auto; height: auto; max-width:100%; }
+.icon-crisp {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+.btn, .action-btn, .input, textarea {
+  -webkit-font-smoothing:antialiased;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+[data-natural-width] {
+  max-width: 100%;
+  height: auto;
+  width: auto;
+}
+</style>
+
+<script>
+(function(){
+  try{
+    const dpr = window.devicePixelRatio || 1;
+    if(dpr < 1.5) return;
+    const want = dpr >= 3 ? '3x' : '2x';
+    document.addEventListener('DOMContentLoaded', () => {
+      const imgs = Array.from(document.querySelectorAll('img[data-2x], img[data-3x]'));
+      imgs.forEach(img => {
+        if (img.hasAttribute('srcset')) return;
+        const src3 = img.getAttribute('data-3x');
+        const src2 = img.getAttribute('data-2x');
+        if (want === '3x' && src3) {
+          img.src = src3;
+        } else if ((want === '3x' && !src3 && src2) || (want === '2x' && src2)) {
+          img.src = src2;
+        }
+        if (!img.hasAttribute('data-natural-width') && img.naturalWidth) {
+          img.setAttribute('data-natural-width', img.naturalWidth);
+        }
+      });
+
+      const bgEls = Array.from(document.querySelectorAll('[data-bg-2x], [data-bg-3x]'));
+      bgEls.forEach(el => {
+        const bg3 = el.getAttribute('data-bg-3x');
+        const bg2 = el.getAttribute('data-bg-2x');
+        if (want === '3x' && bg3) {
+          el.style.backgroundImage = `url('${bg3}')`;
+        } else if ((want === '3x' && !bg3 && bg2) || (want === '2x' && bg2)) {
+          el.style.backgroundImage = `url('${bg2}')`;
+        }
+      });
+    });
+  } catch(e) {
+    console.warn('DPR-swap script failed', e);
+  }
+})();
+</script>
+<!-- --- End: High-DPI / Retina improvements --- -->
+
+
+<style>
+/* ===== Premium Improvements (Non-destructive overrides) ===== */
+
+/* Header tweaks */
+.header{
+  box-shadow:0 6px 18px rgba(0,0,0,0.06) !important;
+}
+.brand .chip{
+  transform:translateY(-1px);
+}
+
+/* Inputs iOS refinements */
+.input, .textarea, select{
+  border-color:#E5E5EA !important;
+  background:#ffffff !important;
+}
+.input::placeholder,.textarea::placeholder{
+  color:#b5b5b8 !important;
+}
+.input:focus,.textarea:focus,select:focus{
+  border-color:#007aff !important;
+  box-shadow:0 0 0 2px rgba(0,122,255,0.3) !important;
+}
+
+/* Records enhanced */
+.record{
+  transition:background .18s ease, border-color .18s ease, transform .15s ease !important;
+  border-radius:14px !important;
+}
+.record:hover{
+  transform:scale(1.01);
+}
+.record.expanded .content{
+  animation:fadeIn .25s ease;
+}
+@keyframes fadeIn{
+  from{opacity:0; transform:translateY(4px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+/* rowline refinement */
+.rowline{
+  padding:2px 0 !important;
+}
+.rowline .est{
+  border-radius:12px !important;
+  padding:2px 8px !important;
+}
+
+/* Action buttons */
+.action-btn{
+  height:32px !important;
+  border-radius:10px !important;
+  background:#f2f2f7 !important;
+  transition:background .2s ease, transform .12s ease;
+}
+.action-btn:hover{
+  background:#e5e5ea !important;
+}
+.action-btn:active{
+  transform:scale(.94) !important;
+}
+
+/* Pills improvements */
+.pill{
+  background:#f4f4f6 !important;
+}
+.pill-inner .val{
+  font-size:13px !important;
+}
+
+/* Modal refinement */
+.modal-card{
+  border-radius:20px !important;
+  box-shadow:0 18px 40px rgba(0,0,0,0.22) !important;
+}
+
+/* Dynamic Island premium */
+#dynamicIsland{
+  box-shadow:0 22px 40px rgba(0,0,0,0.55) !important;
+  transition:opacity .28s ease, transform .28s ease !important;
+}
+
+</style>
+
+<style>
+@keyframes phone-wiggle{
+  0%{transform:rotate(0deg);}
+  25%{transform:rotate(15deg);}
+  50%{transform:rotate(-15deg);}
+  75%{transform:rotate(10deg);}
+  100%{transform:rotate(0deg);}
+}
+.call-alert svg{
+  animation: phone-wiggle 0.6s ease-in-out infinite;
+}
+</style>
+
+
+<style>
+.panel.actions .action-btn{
+    padding:11px 18px !important;
+    font-size:15px !important;
+    border-radius:12px !important;
+    min-height:42px !important;
+    background:rgba(255,255,255,0.75);
+    backdrop-filter:blur(20px) saturate(180%);
+    -webkit-backdrop-filter:blur(20px) saturate(180%);
+    box-shadow:0 3px 8px rgba(0,0,0,0.08);
+}
+</style>
+
+</head>
 <body>
 <div class="di-hidden" id="dynamicIsland"><span id="diText">Acción completada</span><div class="bar" id="diBar"></div></div>
 <div class="app">
@@ -1854,8 +1882,8 @@ input:focus, textarea:focus{
 </div>
 </section>
 <section class="panel actions" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px;">
-<button class="action-btn" id="genPdf">Generar PDF</button>
-<button class="action-btn danger" id="clearAll">Limpiar registros</button>
+<button class="action-btn" style="padding:12px 18px;font-size:15px;border-radius:12px;" id="genPdf">Generar PDF</button>
+<button class="action-btn danger" style="padding:12px 18px;font-size:15px;border-radius:12px;" id="clearAll">Limpiar registros</button>
 </section>
 <!-- Resumen -->
 <section class="panel">
@@ -1895,6 +1923,25 @@ input:focus, textarea:focus{
 <button data-tab="CARGADA" role="tab" type="button">Cargadas <span class="badge" id="bCargadas">0</span></button>
 <button data-tab="VACÍA" role="tab" type="button">Vacías <span class="badge" id="bVacias">0</span></button>
 <button data-tab="AVERIADA" role="tab" type="button">Averiadas <span class="badge" id="bAveriadas">0</span></button>
+    <button data-tab="CALL" type="button" onclick="if(confirm('¿Quieres llamar al 942 355 219?')) window.location.href='tel:942355219'">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="#0A84FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+             style="opacity:.8; margin-right:4px;">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2
+                     19.79 19.79 0 0 1-8.63-3.07
+                     19.5 19.5 0 0 1-6-6
+                     19.79 19.79 0 0 1-3.07-8.67
+                     A2 2 0 0 1 4.22 2h3
+                     a2 2 0 0 1 2 1.72
+                     12.84 12.84 0 0 0 .7 2.81
+                     2 2 0 0 1-.45 2.11l-1.27 1.27
+                     a16 16 0 0 0 6 6l1.27-1.27
+                     a2 2 0 0 1 2.11-.45
+                     12.84 12.84 0 0 0 2.81.7
+                     A2 2 0 0 1 22 16.92z"/>
+        </svg>
+        <span class="notif-badge" id="callBadge" style="background:#FF3B30;color:white;padding:0 6px;border-radius:10px;font-size:10px;margin-left:4px;display:none;">!</span> Reclamar averías
+    </button>
 </div>
 </div>
 <div class="compact-body" id="recordsContainer"></div>
@@ -2381,6 +2428,25 @@ window.addEventListener('DOMContentLoaded', ()=>{
 </script>
 <!-- ===== FIN BLOQUE JS UNIFICADO ===== -->
 
+
+<script>
+(function(){
+  const origUpdate=updateAll;
+  updateAll=function(){
+    origUpdate();
+    const avg = plataformas.filter(p=>p.estado==='AVERIADA').length;
+    const badge=document.getElementById('callBadge');
+    const btn=document.querySelector('button[data-tab="CALL"]');
+    if(avg>0){
+      if(badge) badge.style.display='inline-block';
+      if(btn) btn.classList.add('call-alert');
+    }else{
+      if(badge) badge.style.display='none';
+      if(btn) btn.classList.remove('call-alert');
+    }
+  }
+})();
+</script>
 </body>
 </html>
 <style>
@@ -2567,4 +2633,3 @@ body{
 
 #dynamicIsland.di-hide {
   animation: islandShrink .28s ease-out forwards !important;
-}
