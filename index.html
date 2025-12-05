@@ -1,9 +1,16 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0" name="viewport"/>
-<title>XPO — Registro de Plataformas </title>
+<title>XPO — Registro de Plataformas </title><!-- ICONO APP: CODE (SVG inline, sin archivos externos) -->
+<link href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMTAiIGZpbGw9IiMxRTczQkUiLz48dGV4dCB4PSI1MCUiIHk9IjU1JSIgZm9udC1zaXplPSIxNjAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgSGVsdmV0aWNhLCBzYW5zLXNlcmlmIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+Q09ERTwvdGV4dD48L3N2Zz4=" rel="apple-touch-icon"/>
+<link href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMTAiIGZpbGw9IiMxRTczQkUiLz48dGV4dCB4PSI1MCUiIHk9IjU1JSIgZm9udC1zaXplPSIxNjAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgSGVsdmV0aWNhLCBzYW5zLXNlcmlmIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+Q09ERTwvdGV4dD48L3N2Zz4=" rel="icon" type="image/svg+xml"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="default" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="CODE" name="apple-mobile-web-app-title"/>
+
 <style>
 /* ===== Reset mínimo ===== */
 *{text-decoration:none !important;}
@@ -638,7 +645,7 @@ input, textarea, .record-content, .record-time{font-weight:400;}
 .step-title{font-weight:600;}
 
 /* Animation consistency */
-*{transition:all .22s cubic-bezier(.25,.8,.25,1);}
+/* removed global transitions */
 
 /* Unified component behavior */
 .card:hover, .record:hover{
@@ -1169,7 +1176,7 @@ header, .topbar, .navbar {
 }
 
 /* === Smooth Transitions === */
-* { transition: all 0.15s ease; }
+/* removed global transitions */
 
 /* === Dynamic Island === */
 #dynamicIsland {
@@ -1435,7 +1442,6 @@ body{
 }
 
 </style>
-
 <style>
 /* ================= Responsive ajustes ================= */
 
@@ -1519,9 +1525,6 @@ body{
   }
 }
 </style>
-
-
-
 <style>
 .record.expanded .actions{
   display:flex !important;
@@ -1530,8 +1533,6 @@ body{
   display:inline-flex !important;
 }
 </style>
-
-
 <style>
 /* Compact row visual */
 .rowline{display:flex;align-items:center;justify-content:space-between;gap:8px;}
@@ -1539,7 +1540,7 @@ body{
 .rowline .est{opacity:.85;}
 .rowline .ts{opacity:.65;font-size:12px;}
 .record{padding:10px 12px;border:1px solid rgba(0,0,0,.06);border-radius:12px;margin-bottom:8px;background:#fff;}
-.record .content{font-size:12.5px;margin-top:6px;color:#2B2F34}
+
 .record .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:6px;}
 .record .actions .action-btn{padding:6px 10px;font-size:12px;border-radius:10px;border:1px solid rgba(0,0,0,.08);background:#F7F8FA;}
 /* Last-3 collapsed view */
@@ -1654,7 +1655,6 @@ svg { width: auto; height: auto; max-width:100%; }
   width: auto;
 }
 </style>
-
 <script>
 (function(){
   try{
@@ -1694,8 +1694,6 @@ svg { width: auto; height: auto; max-width:100%; }
 })();
 </script>
 <!-- --- End: High-DPI / Retina improvements --- -->
-
-
 <style>
 /* ===== Premium Improvements (Non-destructive overrides) ===== */
 
@@ -1780,7 +1778,6 @@ svg { width: auto; height: auto; max-width:100%; }
 }
 
 </style>
-
 <style>
 @keyframes phone-wiggle{
   0%{transform:rotate(0deg);}
@@ -1793,8 +1790,6 @@ svg { width: auto; height: auto; max-width:100%; }
   animation: phone-wiggle 0.6s ease-in-out infinite;
 }
 </style>
-
-
 <style>
 .panel.actions .action-btn{
     padding:11px 18px !important;
@@ -1807,7 +1802,63 @@ svg { width: auto; height: auto; max-width:100%; }
     box-shadow:0 3px 8px rgba(0,0,0,0.08);
 }
 </style>
+<style>
+/* GPU hint for step transitions */
+.screen, .step-panel{
+  will-change: transform, opacity;
+}
+</style>
+<style>
+/* iOS-like tap feedback */
+.btn:active,
+.action-btn:active{
+  transform: scale(0.96);
+  transition: transform 0.12s ease-out;
+}
+</style>
+<style>
+/* Live search input styling */
+.search-input{
+  margin-top:6px;
+  font-size:13px;
+  padding:6px 10px;
+}
+@media (min-width:600px){
+  .compact-header{
+    justify-content:space-between;
+    align-items:center;
+  }
+  .search-input{
+    max-width:220px;
+    margin-top:0;
+  }
+}
 
+/* Animated content expand */
+.record .content{
+  font-size:12.5px;
+  margin-top:6px;
+  color:#2B2F34;
+  max-height:0;
+  opacity:0;
+  overflow:hidden;
+  transition:max-height .25s ease, opacity .25s ease;
+}
+.record.expanded .content{
+  max-height:300px;
+  opacity:1;
+}
+
+/* Highlight duplicate record */
+@keyframes dupGlow{
+  0%{box-shadow:0 0 0 0 rgba(10,132,255,0.0); background-color:rgba(10,132,255,0.02);}
+  50%{box-shadow:0 0 0 6px rgba(10,132,255,0.28); background-color:rgba(10,132,255,0.06);}
+  100%{box-shadow:0 0 0 0 rgba(10,132,255,0.0); background-color:inherit;}
+}
+.record.highlight-dup{
+  animation:dupGlow 1.1s ease-out;
+}
+</style>
 </head>
 <body>
 <div class="di-hidden" id="dynamicIsland"><span id="diText">Acción completada</span><div class="bar" id="diBar"></div></div>
@@ -1882,8 +1933,8 @@ svg { width: auto; height: auto; max-width:100%; }
 </div>
 </section>
 <section class="panel actions" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px;">
-<button class="action-btn" style="padding:12px 18px;font-size:15px;border-radius:12px;" id="genPdf">Generar PDF</button>
-<button class="action-btn danger" style="padding:12px 18px;font-size:15px;border-radius:12px;" id="clearAll">Limpiar registros</button>
+<button class="action-btn" id="genPdf" style="padding:12px 18px;font-size:15px;border-radius:12px;">Generar PDF</button>
+<button class="action-btn danger" id="clearAll" style="padding:12px 18px;font-size:15px;border-radius:12px;">Limpiar registros</button>
 </section>
 <!-- Resumen -->
 <section class="panel">
@@ -1923,11 +1974,9 @@ svg { width: auto; height: auto; max-width:100%; }
 <button data-tab="CARGADA" role="tab" type="button">Cargadas <span class="badge" id="bCargadas">0</span></button>
 <button data-tab="VACÍA" role="tab" type="button">Vacías <span class="badge" id="bVacias">0</span></button>
 <button data-tab="AVERIADA" role="tab" type="button">Averiadas <span class="badge" id="bAveriadas">0</span></button>
-    <button data-tab="CALL" type="button" onclick="if(confirm('¿Quieres llamar al 942 355 219?')) window.location.href='tel:942355219'">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-             stroke="#0A84FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-             style="opacity:.8; margin-right:4px;">
-            <path d="M22 16.92v3a2 2 0 0 1-2.18 2
+<button data-tab="CALL" onclick="if(confirm('¿Quieres llamar al 942 355 219?')) window.location.href='tel:942355219'" type="button">
+<svg fill="none" height="16" stroke="#0A84FF" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="opacity:.8; margin-right:4px;" viewbox="0 0 24 24" width="16">
+<path d="M22 16.92v3a2 2 0 0 1-2.18 2
                      19.79 19.79 0 0 1-8.63-3.07
                      19.5 19.5 0 0 1-6-6
                      19.79 19.79 0 0 1-3.07-8.67
@@ -1938,11 +1987,12 @@ svg { width: auto; height: auto; max-width:100%; }
                      a16 16 0 0 0 6 6l1.27-1.27
                      a2 2 0 0 1 2.11-.45
                      12.84 12.84 0 0 0 2.81.7
-                     A2 2 0 0 1 22 16.92z"/>
-        </svg>
-        <span class="notif-badge" id="callBadge" style="background:#FF3B30;color:white;padding:0 6px;border-radius:10px;font-size:10px;margin-left:4px;display:none;">!</span> Reclamar averías
+                     A2 2 0 0 1 22 16.92z"></path>
+</svg>
+<span class="notif-badge" id="callBadge" style="background:#FF3B30;color:white;padding:0 6px;border-radius:10px;font-size:10px;margin-left:4px;display:none;">!</span> Reclamar averías
     </button>
 </div>
+<input autocomplete="off" class="input search-input" id="searchInput" placeholder="Buscar matrícula o texto…" type="search"/>
 </div>
 <div class="compact-body" id="recordsContainer"></div>
 </section>
@@ -1969,18 +2019,6 @@ svg { width: auto; height: auto; max-width:100%; }
 </div>
 </div>
 <!-- jsPDF -->
-
-
-
-
-
-
-
-
-
-
-
-
 <style>
 .panel.actions{
     margin-top:18px !important;
@@ -2018,15 +2056,13 @@ svg { width: auto; height: auto; max-width:100%; }
 }
 #clearAll{ position:relative; overflow:visible; }
 </style>
-
-
 <!-- ===== BLOQUE JS UNIFICADO (REEMPLAZAR JS VIEJO) ===== -->
 <script>
 /* Utilities */
 const $ = id => document.getElementById(id);
 const fmtHour = () => new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 let plataformas = []; let currentMatricula = ''; let currentEstado = '';
-let currentTab = 'TODAS'; let editingId = null;
+let currentTab = 'TODAS'; let editingId = null; let searchQuery = '';
 const STORAGE_KEY = 'plataformas-global';
 
 function loadData(){ try{ const raw=localStorage.getItem(STORAGE_KEY); plataformas = raw ? JSON.parse(raw) : []; }catch(e){ plataformas = []; } }
@@ -2087,7 +2123,16 @@ function setFill(pillId, pct){ const el = $(pillId); if(!el) return;
 /* Render compact list */
 function renderCompactList(){
   const box = $('recordsContainer'); if(!box) return;
-  const data = currentTab === 'TODAS' ? plataformas.slice().reverse() : plataformas.filter(p=>p.estado === currentTab).slice().reverse();
+  const base = currentTab === 'TODAS'
+    ? plataformas.slice().reverse()
+    : plataformas.filter(p=>p.estado === currentTab).slice().reverse();
+  const q = (searchQuery || '').trim().toLowerCase();
+  const data = q
+    ? base.filter(it =>
+        (it.matricula || '').toLowerCase().includes(q) ||
+        ((it.contenido || '').toLowerCase().includes(q))
+      )
+    : base;
   box.innerHTML = data.map(it=>`
     <div class="record" data-id="${it.id}" data-estado="${it.estado}">
       <div class="rowline">
@@ -2168,7 +2213,11 @@ function showStep(next, dir='forward'){
   nxt.classList.add('active');
   $('d1').classList.toggle('active', next===1); $('d2').classList.toggle('active', next===2); $('d3').classList.toggle('active', next===3);
   $('flowTitle').textContent = next===1 ? 'Matrícula' : next===2 ? 'Estado' : 'Contenido';
-  step = next; requestAnimationFrame(()=>{ nxt.focus({preventScroll:true}); keepCardInView(); });
+  step = next;
+  requestAnimationFrame(()=>{
+    try{ nxt.focus({preventScroll:true}); }catch(e){}
+        keepCardInView();
+  });
 }
 function nextFromS1(){
   const m = $('matriculaInput').value.trim().toUpperCase();
@@ -2181,7 +2230,25 @@ function chooseEstado(estado){
   if(estado==='VACÍA'){
     if(!currentMatricula){ alert('Introduce primero una matrícula válida'); showStep(1,'back'); return; }
     const dup = plataformas.some(p => p.matricula===currentMatricula && p.estado==='VACÍA');
-    if(dup){ alert('Esta matrícula ya fue registrada como VACÍA.'); resetFlow(); return; }
+    if(dup){
+      // Mostrar aviso suave y resaltar el último registro VACÍA existente
+      toast('Esta matrícula ya fue registrada como VACÍA');
+      try{
+        const last = plataformas.filter(p=>p.matricula===currentMatricula && p.estado==='VACÍA').slice(-1)[0];
+        if(last){
+          updateAll();
+          requestAnimationFrame(()=>{
+            const rec = document.querySelector(`.record[data-id="${last.id}"]`);
+            if(rec){
+              rec.classList.add('highlight-dup');
+              try{ rec.scrollIntoView({behavior:'smooth', block:'center'}); }catch(e){}
+              setTimeout(()=>{ rec.classList.remove('highlight-dup'); }, 1200);
+            }
+          });
+        }
+      }catch(e){}
+      return;
+    }
     plataformas.push({ id:Date.now(), matricula:currentMatricula, estado, contenido:'', timestamp:fmtHour() });
     saveData(); updateAll(); flashSuccess(); resetFlow(); keepCardInView();
   } else {
@@ -2199,7 +2266,14 @@ function registrar(){
     setTimeout(()=>{ btn.disabled=false; btn.textContent=prev; flashSuccess(); resetFlow(); keepCardInView(); }, 600);
   }, 360);
 }
-function resetFlow(){ $('matriculaInput').value=''; $('contenidoInput').value=''; currentMatricula=''; currentEstado=''; showStep(1,'back'); }
+function resetFlow(){
+  $('matriculaInput').value='';
+  $('contenidoInput').value='';
+  currentMatricula='';
+  currentEstado='';
+  try{ localStorage.removeItem('draft'); }catch(e){}
+  showStep(1,'back');
+}
 function flashSuccess(){ const active = document.querySelector('.screen.active'); if(active){ active.classList.remove('flash-once'); void active.offsetWidth; active.classList.add('flash-once'); } toast('Registro guardado'); }
 
 /* PDF generator wrapper (assume jsPDF single include) */
@@ -2385,6 +2459,40 @@ document.addEventListener('click', (e)=>{
 window.addEventListener('DOMContentLoaded', ()=>{
   loadData(); updateAll();
 
+  // Restaurar borrador si existe
+  const matInput = $('matriculaInput');
+  const contInput = $('contenidoInput');
+  try{
+    const raw = localStorage.getItem('draft');
+    if(raw){
+      const d = JSON.parse(raw);
+      if(d.m && matInput) matInput.value = d.m;
+      if(d.c && contInput) contInput.value = d.c;
+    }
+  }catch(e){}
+
+  // Autosave borrador
+  const saveDraft = ()=>{
+    try{
+      const payload = {
+        m: matInput ? matInput.value : '',
+        c: contInput ? contInput.value : ''
+      };
+      localStorage.setItem('draft', JSON.stringify(payload));
+    }catch(e){}
+  };
+  if(matInput) matInput.addEventListener('input', saveDraft);
+  if(contInput) contInput.addEventListener('input', saveDraft);
+
+  // Buscador en registros
+  const searchInput = $('searchInput');
+  if(searchInput){
+    searchInput.addEventListener('input', ()=>{
+      searchQuery = searchInput.value || '';
+      renderCompactList();
+    });
+  }
+
   // Attach pressed effect to interactive elements
   document.querySelectorAll('.btn, .action-btn, .qa, .menu-trigger').forEach(attachPressedEffect);
 
@@ -2427,8 +2535,6 @@ window.addEventListener('DOMContentLoaded', ()=>{
 });
 </script>
 <!-- ===== FIN BLOQUE JS UNIFICADO ===== -->
-
-
 <script>
 (function(){
   const origUpdate=updateAll;
@@ -2623,13 +2729,3 @@ body{
 }
 
 </style>
-<style>
-
-/* ==== Dynamic Islandg EXIT Animation — SHRINK FADE ==== */
-@keyframes islandShrink {
-  0%   { transform: translateX(-50%) scale(1); opacity: 1; }
-  100% { transform: translateX(-50%) scale(0.86); opacity: 0; }
-}
-
-#dynamicIsland.di-hide {
-  animation: islandShrink .28s ease-out forwards !important;
