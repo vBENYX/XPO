@@ -1434,6 +1434,225 @@ body{
   box-shadow: 0 8px 24px rgba(0,0,0,0.06);
 }
 
+
+/* === SPATIAL TRANSITIONS ENHANCED === */
+.screen{
+  opacity:0;
+  transform:translateY(20px) scale(.98) translateZ(0);
+  transition:opacity .55s cubic-bezier(.22,1,.36,1),
+             transform .55s cubic-bezier(.22,1,.36,1);
+}
+.screen.active{
+  opacity:1;
+  transform:translateY(0) scale(1) translateZ(0);
+}
+
+/* Record expansion 3D */
+.record{
+  transition:transform .35s cubic-bezier(.22,1,.36,1),
+             box-shadow .35s cubic-bezier(.22,1,.36,1);
+  transform:translateZ(0);
+}
+.record.expanded{
+  transform:scale(1.02) translateZ(22px);
+  box-shadow:0 26px 70px rgba(0,0,0,0.35);
+}
+
+/* Flow card as Vision Pro Orb panel */
+#flowCard{
+  transform:translateY(0) scale(1) translateZ(0);
+  transition: transform .55s cubic-bezier(.22,1,.36,1),
+              box-shadow .55s cubic-bezier(.22,1,.36,1);
+}
+#flowCard.active{
+  transform:translateY(0) scale(1.02) translateZ(28px);
+  box-shadow:0 30px 80px rgba(15,20,35,0.25);
+}
+
+
+/* === SF SYMBOLS ICONS === */
+.symbol{
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "SF Pro Display";
+  font-weight:600;
+  display:inline-flex;
+  align-items:center;
+  font-size:16px;
+  margin-right:6px;
+}
+.icon-doc::before{content:"📄";}
+.icon-check::before{content:"✔️";}
+.icon-car::before{content:"🚚";}
+.icon-clock::before{content:"🕒";}
+.icon-search::before{content:"🔍";}
+
+
+/* === STATE BUTTON LEVITATION === */
+.states .btn{
+  transition: transform .35s cubic-bezier(.22,1,.36,1),
+              box-shadow .35s cubic-bezier(.22,1,.36,1);
+}
+.states .btn:hover{
+  transform: translateY(-4px) scale(1.03);
+  box-shadow:0 18px 40px rgba(0,0,0,0.18);
+}
+.states .btn.selected{
+  animation: levitate 0.4s ease forwards;
+}
+@keyframes levitate{
+  0%{ transform:scale(1) translateY(0); }
+  40%{ transform:scale(1.05) translateY(-6px); }
+  100%{ transform:scale(1.02) translateY(-2px); }
+}
+
+
+/* === MODAL DEPTH DYNAMIC === */
+#editModal .modal-dialog{
+  transition: transform .45s cubic-bezier(.22,1,.36,1),
+              box-shadow .45s cubic-bezier(.22,1,.36,1);
+  transform: scale(.92) translateY(20px);
+  opacity:0;
+}
+#editModal.show .modal-dialog{
+  transform: scale(1) translateY(0);
+  opacity:1;
+  box-shadow:
+    0 36px 90px rgba(0,0,0,0.55),
+    inset 0 1px 4px rgba(255,255,255,0.95);
+}
+
+
+/* === SPATIAL ENTRY ANIMATIONS === */
+.card, .panel, .compact, #flowCard, .record{
+  opacity:0;
+  transform:translateY(30px) scale(.97);
+  animation:spatialIn .7s cubic-bezier(.22,1,.36,1) forwards;
+}
+@keyframes spatialIn{
+  to{opacity:1; transform:translateY(0) scale(1);}
+}
+
+/* === DYNAMIC BLUR ON SCROLL === */
+.scrolled .card, 
+.scrolled .panel, 
+.scrolled .compact{
+  backdrop-filter:blur(32px) saturate(200%);
+  opacity:.92;
+}
+
+/* === SOFT VOLUMETRIC SHADOWS UNDER BUTTONS === */
+.btn, .btn-primary, .btn-secondary, .action-btn{
+  box-shadow:
+    0 12px 24px rgba(0,0,0,0.10),
+    0 6px 14px rgba(0,0,0,0.06),
+    inset 0 1px 4px rgba(255,255,255,0.95);
+}
+
+
+#sidebar .side-btn{
+  padding:10px;
+  border-radius:18px;
+  background:rgba(255,255,255,0.8);
+  text-align:center;
+  cursor:pointer;
+  transition:transform .3s, background .3s;
+}
+#sidebar .side-btn:hover{
+  transform:translateY(-4px);
+  background:white;
+}
+
+
+}
+body.scrolled .card,
+body.scrolled .panel,
+body.scrolled .compact{
+  filter: blur(1.2px) brightness(.97);
+  box-shadow: 0 32px 70px rgba(0,0,0,0.22);
+}
+
+/* === 2) ILUMINACIÓN DINÁMICA LATERAL === */
+.dynamic-light{
+  position:relative;
+  overflow:hidden;
+}
+.dynamic-light::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at var(--mX,50%) var(--mY,50%), rgba(255,255,255,0.25), transparent 60%);
+  pointer-events:none;
+  opacity:.0;
+  transition:opacity .25s ease, background-position .25s ease;
+}
+.dynamic-light:hover::after{
+  opacity:.65;
+}
+
+/* === 4) SPATIAL FADE DE LOAD === */
+.fade-in{
+  opacity:0;
+  transform:translateY(30px) scale(.96);
+  animation:fadeInUp .9s cubic-bezier(.22,1,.36,1) forwards;
+}
+@keyframes fadeInUp{
+  to{opacity:1; transform:translateY(0) scale(1);}
+}
+
+/* === 5) BADGES VISIONOS ANIMADOS === */
+.badge{
+  animation:popBadge .45s cubic-bezier(.22,1,.36,1);
+}
+@keyframes popBadge{
+  0%{transform:scale(.6); opacity:0;}
+  70%{transform:scale(1.12); opacity:1;}
+  100%{transform:scale(1);}
+}
+
+/* === 6) CONTADORES DINÁMICOS === */
+.count-animate{
+  filter:blur(4px);
+  opacity:0;
+  animation:countReveal .8s ease forwards;
+}
+@keyframes countReveal{
+  to{filter:blur(0); opacity:1;}
+}
+
+
+/* === VISIONOS CLEAR EFFECT === */
+#clearEffect{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  display:none;
+  z-index:3000;
+}
+.particle{
+  position:absolute;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.9);
+  box-shadow:0 0 14px rgba(255,255,255,0.9);
+  animation:particleOut .6s ease-out forwards;
+}
+@keyframes particleOut{
+  to{
+    transform:translate(var(--dx), var(--dy)) scale(0);
+    opacity:0;
+  }
+}
+.flash{
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at center, rgba(255,255,255,0.9), transparent 70%);
+  animation:flashOut .5s ease-out forwards;
+}
+@keyframes flashOut{
+  from{opacity:1;}
+  to{opacity:0;}
+}
+
 </style>
 
 <style>
@@ -1871,6 +2090,266 @@ svg { width: auto; height: auto; max-width:100%; }
 }
 </style>
 
+
+<!-- === VisionOS AVANZADO THEME INJECT === -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sf-font@1.0.0/sf-font.min.css">
+<style>
+html, body{
+  margin:0;
+  padding:0;
+  font-family:"SF Pro Display","SF Pro Text",-apple-system,system-ui;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
+}
+body{
+  background:radial-gradient(circle at 50% 15%, #ffffff, #dfe3f0);
+}
+
+/* App container */
+.app{
+  max-width:1080px;
+  margin:0 auto;
+  padding:26px 14px 40px;
+}
+
+/* HEADER VISIONOS AVANZADO */
+.header{
+  position:sticky;
+  top:14px;
+  z-index:20;
+  border-radius:30px !important;
+  padding:18px 22px !important;
+  background:rgba(255,255,255,0.30) !important;
+  backdrop-filter:blur(26px) saturate(180%) !important;
+  -webkit-backdrop-filter:blur(26px) saturate(180%) !important;
+  border:1px solid rgba(255,255,255,0.75) !important;
+  box-shadow:
+    0 18px 40px rgba(0,0,0,0.12),
+    inset 0 1px 4px rgba(255,255,255,0.90) !important;
+}
+body.scrolled .header{
+  box-shadow:
+    0 26px 60px rgba(0,0,0,0.22),
+    inset 0 1px 4px rgba(255,255,255,0.92) !important;
+}
+.brand{
+  gap:10px;
+}
+.headline{
+  font-size:18px !important;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+
+/* GLOBAL GLASS PANELS (cards, panel resumen, compact, flow) */
+.card,
+.panel,
+.compact{
+  border-radius:28px !important;
+  background:rgba(255,255,255,0.26) !important;
+  backdrop-filter:blur(24px) saturate(185%) !important;
+  -webkit-backdrop-filter:blur(24px) saturate(185%) !important;
+  border:1px solid rgba(255,255,255,0.74) !important;
+  box-shadow:
+    0 20px 60px rgba(15,20,35,0.18),
+    inset 0 1px 3px rgba(255,255,255,0.90) !important;
+}
+
+/* Flow card a modo “orb” central */
+#flowCard{
+  max-width:760px;
+  margin:20px auto 18px !important;
+  border-radius:32px !important;
+}
+
+/* TITULOS FLOW */
+#flowTitle{
+  font-size:20px !important;
+  font-weight:600;
+  letter-spacing:.03em;
+}
+
+/* Inputs & textareas VisionOS */
+.input,
+textarea,
+.textarea,
+.card input[type="text"],
+.card textarea{
+  border-radius:18px !important;
+  border:1px solid rgba(212,216,228,0.9) !important;
+  background:rgba(255,255,255,0.90) !important;
+  backdrop-filter:blur(14px) !important;
+  -webkit-backdrop-filter:blur(14px) !important;
+  padding:13px 15px !important;
+  font-size:15px !important;
+  box-shadow:
+    inset 0 1px 2px rgba(255,255,255,0.9),
+    0 0 0 0 rgba(10,132,255,0) !important;
+}
+.input::placeholder,
+textarea::placeholder,
+.textarea::placeholder{
+  color:rgba(120,125,135,0.85);
+}
+input:focus,
+textarea:focus{
+  outline:none !important;
+  border-color:#0A84FF !important;
+  box-shadow:0 0 0 4px rgba(10,132,255,0.25) !important;
+}
+
+/* BOTONES VISIONOS – base */
+.btn,
+.btn-primary,
+.btn-secondary,
+.action-btn,
+.segment button{
+  position:relative;
+  overflow:hidden;
+  border-radius:18px !important;
+  border:1px solid rgba(210,215,230,0.9) !important;
+  background:linear-gradient(145deg,#ffffffdd,#f1f3fa) !important;
+  box-shadow:
+    inset 0 1px 4px rgba(255,255,255,0.95),
+    0 10px 26px rgba(0,0,0,0.10) !important;
+  font-weight:600;
+  font-size:14px;
+}
+.btn-primary{
+  border-color:rgba(0,102,204,0.95) !important;
+  background:linear-gradient(150deg,#0A84FF,#0066CC) !important;
+  color:#fff !important;
+  box-shadow:
+    inset 0 1px 4px rgba(255,255,255,0.4),
+    0 14px 30px rgba(9,76,176,0.55) !important;
+}
+.btn-secondary{
+  background:linear-gradient(145deg,#ffffffcc,#eceff5) !important;
+}
+.btn:active,
+.btn-primary:active,
+.btn-secondary:active,
+.action-btn:active,
+.segment button:active{
+  transform:scale(.97);
+}
+
+/* Estados flow como tarjetas VisionOS */
+.states .btn{
+  min-height:60px !important;
+  padding:16px 14px !important;
+  border-radius:18px !important;
+  border:1px solid rgba(210,215,230,0.9) !important;
+  background:rgba(255,255,255,0.94) !important;
+  box-shadow:
+    0 10px 26px rgba(15,20,35,0.10),
+    inset 0 1px 3px rgba(255,255,255,0.95) !important;
+}
+.states .btn.selected{
+  background:rgba(10,132,255,0.16) !important;
+  border-color:#0A84FF !important;
+  transform:scale(1.04) !important;
+}
+.states .btn.selected::after{
+  content:"✓";
+  margin-left:8px;
+  font-weight:700;
+  color:#0A84FF;
+}
+
+/* Steps dots VisionOS */
+.steps .dot{
+  width:11px !important;
+  height:11px !important;
+  border-radius:999px !important;
+  background:#cfd3df !important;
+  opacity:.75;
+  transform:scale(1);
+}
+.steps .dot.active{
+  background:#0A84FF !important;
+  opacity:1;
+  transform:scale(1.4);
+}
+
+/* SCREEN transitions tipo spatial */
+.screen{
+  transition:
+    opacity .45s cubic-bezier(.22,1,.36,1),
+    transform .45s cubic-bezier(.22,1,.36,1) !important;
+}
+.screen.active{
+  opacity:1 !important;
+  transform:translateY(0) translateZ(0) scale(1) !important;
+}
+.screen:not(.active){
+  opacity:0 !important;
+  transform:translateY(14px) scale(.985) !important;
+}
+
+/* PILLS resumen VisionOS */
+.pill{
+  border-radius:20px !important;
+  background:linear-gradient(145deg,rgba(255,255,255,0.95),rgba(240,244,252,0.98)) !important;
+  border:1px solid rgba(216,220,234,0.95) !important;
+  box-shadow:
+    0 14px 30px rgba(15,20,35,0.16),
+    inset 0 1px 3px rgba(255,255,255,0.96) !important;
+}
+
+/* Lista compacta registros */
+.record{
+  border-radius:18px !important;
+  border:1px solid rgba(215,219,230,0.95) !important;
+  background:rgba(255,255,255,0.96) !important;
+  box-shadow:
+    0 10px 24px rgba(15,20,35,0.12),
+    inset 0 1px 2px rgba(255,255,255,0.96) !important;
+}
+.record.expanded{
+  box-shadow:
+    0 16px 40px rgba(15,20,35,0.18),
+    inset 0 1px 3px rgba(255,255,255,0.96) !important;
+}
+.rowline .mat{
+  font-size:15px !important;
+}
+.rowline .ts{
+  font-size:12px !important;
+}
+
+/* Compact header / segment Vision look */
+.compact-header{
+  border-radius:22px !important;
+  background:rgba(255,255,255,0.24) !important;
+  border:1px solid rgba(255,255,255,0.75) !important;
+  backdrop-filter:blur(22px) saturate(180%) !important;
+}
+
+/* Dynamic Island refuerzo sombra */
+#dynamicIsland{
+  box-shadow:0 22px 46px rgba(0,0,0,0.55) !important;
+}
+
+/* Modal edición como card VisionOS flotante */
+#editModal .modal-dialog{
+  border-radius:26px !important;
+  background:rgba(255,255,255,0.96) !important;
+  backdrop-filter:blur(28px) !important;
+  -webkit-backdrop-filter:blur(28px) !important;
+  border:1px solid rgba(255,255,255,0.8) !important;
+  box-shadow:
+    0 26px 70px rgba(0,0,0,0.50),
+    inset 0 1px 3px rgba(255,255,255,0.92) !important;
+}
+
+/* Small text tuning */
+label, .label, .meta .item{
+  font-size:13px !important;
+}
+</style>
+
 </head>
 <body>
 <div class="di-hidden" id="dynamicIsland"><span id="diText">Acción completada</span><div class="bar" id="diBar"></div></div>
@@ -1893,7 +2372,7 @@ svg { width: auto; height: auto; max-width:100%; }
 <div class="headline">Registro de Plataformas</div>
 </header>
 <!-- Card de flujo -->
-<section aria-live="polite" class="card" id="flowCard">
+<section aria-live="polite" class="card dynamic-light" id="flowCard">
 <div class="card-header">
 <div aria-hidden="true" class="chevron">⟨</div>
 <div class="title-lg" id="flowTitle">Matrícula</div>
@@ -1914,9 +2393,9 @@ svg { width: auto; height: auto; max-width:100%; }
 <div class="item"><strong id="matriculaDisplay">—</strong></div>
 </div>
 <div aria-label="Selecciona estado" class="row states" role="group">
-<button class="btn" id="btnCargada" type="button">CARGADA</button>
-<button class="btn" id="btnVacia" type="button">VACÍA</button>
-<button class="btn" id="btnAveriada" type="button">AVERIADA</button>
+<button class="btn dynamic-light" id="btnCargada" type="button">CARGADA</button>
+<button class="btn dynamic-light" id="btnVacia" type="button">VACÍA</button>
+<button class="btn dynamic-light" id="btnAveriada" type="button">AVERIADA</button>
 </div>
 <div class="row">
 <button aria-label="Volver a matrícula" class="btn btn-secondary" id="back1" type="button">Volver</button>
@@ -1949,7 +2428,7 @@ svg { width: auto; height: auto; max-width:100%; }
 <button class="action-btn danger" style="padding:12px 18px;font-size:15px;border-radius:12px;" id="clearAll">Limpiar registros</button>
 </section>
 <!-- Resumen -->
-<section class="panel">
+<section class="panel dynamic-light">
 <h3 style="text-align:center;margin:0 0 10px;font-size:16px">Resumen del día</h3>
 <div class="pills" id="pillsWrap">
 <div class="pill" id="pillCargadas" style="--fill:0%">
@@ -1979,7 +2458,7 @@ svg { width: auto; height: auto; max-width:100%; }
 </div>
 </section>
 <!-- Registros compactos con menú fijo -->
-<section class="compact" id="compactPanel">
+<section class="compact dynamic-light" id="compactPanel">
 <div class="compact-header">
 <div aria-label="Filtrar registros" class="segment" role="tablist">
 <button aria-selected="true" class="active" data-tab="TODAS" role="tab" type="button">Todas <span class="badge" id="bAll">0</span></button>
@@ -2583,6 +3062,173 @@ window.addEventListener('DOMContentLoaded', ()=>{
   }
 })();
 </script>
+
+<script>
+/* === INTELLIGENT PLATFORM SELECTOR (Autocomplete) === */
+(function(){
+  const lista = Object.keys(plataformas || {});
+  if(!lista.length) return;
+
+  const input = document.getElementById('matricula');
+  if(!input) return;
+
+  /* Autocomplete dropdown */
+  const box = document.createElement('div');
+  box.style.position = 'absolute';
+  box.style.background = 'rgba(255,255,255,0.9)';
+  box.style.backdropFilter = 'blur(18px)';
+  box.style.border = '1px solid rgba(210,210,220,0.8)';
+  box.style.borderRadius = '14px';
+  box.style.padding = '6px 0';
+  box.style.boxShadow = '0 14px 26px rgba(0,0,0,0.15)';
+  box.style.zIndex = '2000';
+  box.style.display = 'none';
+  box.style.maxHeight = '200px';
+  box.style.overflowY = 'auto';
+  document.body.appendChild(box);
+
+  function positionBox(){
+    const r = input.getBoundingClientRect();
+    box.style.left = r.left + 'px';
+    box.style.top = (r.bottom + window.scrollY + 6) + 'px';
+    box.style.width = r.width + 'px';
+  }
+
+  input.addEventListener('input', ()=>{
+    const val = input.value.toUpperCase();
+    positionBox();
+    if(!val){
+      box.style.display = 'none';
+      return;
+    }
+    const matches = lista.filter(m => m.includes(val));
+    if(!matches.length){
+      box.style.display = 'none';
+      return;
+    }
+    box.innerHTML = matches.map(m=>\`<div style="
+      padding:10px 14px;
+      cursor:pointer;
+      font-size:14px;
+      transition:background .2s;">
+      \${m}
+    </div>\`).join('');
+    [...box.children].forEach(div=>{
+      div.addEventListener('mouseover',()=>div.style.background="rgba(10,132,255,0.15)");
+      div.addEventListener('mouseout',()=>div.style.background="transparent");
+      div.addEventListener('click',()=>{
+        input.value = div.innerText.trim();
+        box.style.display='none';
+      });
+    });
+    box.style.display = 'block';
+  });
+
+  document.addEventListener('click',(e)=>{
+    if(!box.contains(e.target) && e.target!==input){
+      box.style.display='none';
+    }
+  });
+})();
+</script>
+
+
+<script>
+/* === Dynamic blur on scroll === */
+window.addEventListener('scroll',()=>{
+  if(window.scrollY > 40) document.body.classList.add('scrolled');
+  else document.body.classList.remove('scrolled');
+});
+
+
+</script>
+
+
+<script>
+/* === 2) LIGHT FOLLOW MOUSE === */
+document.addEventListener('mousemove', e=>{
+  document.querySelectorAll('.dynamic-light').forEach(el=>{
+    const r = el.getBoundingClientRect();
+    const x = ((e.clientX - r.left) / r.width) * 100;
+    const y = ((e.clientY - r.top) / r.height) * 100;
+    el.style.setProperty('--mX', x + '%');
+    el.style.setProperty('--mY', y + '%');
+  });
+});
+
+/* === 4) SPATIAL PAGE LOAD === */
+window.addEventListener('DOMContentLoaded', ()=>{
+  document.querySelectorAll('.card, .panel, .compact, #flowCard, header')
+    .forEach(el=> el.classList.add('fade-in'));
+});
+
+/* === 6) ANIMACIÓN DE CONTADORES === */
+function animateCounters(){
+  const items = document.querySelectorAll('.count-num');
+  items.forEach(el=>{
+    const target = parseInt(el.innerText);
+    el.innerText = "0";
+    el.classList.add("count-animate");
+    let curr = 0;
+    const step = Math.max(1, Math.floor(target/30));
+    const intv = setInterval(()=>{
+      curr += step;
+      if(curr >= target){
+        el.innerText = target;
+        clearInterval(intv);
+      } else el.innerText = curr;
+    }, 20);
+  });
+}
+setTimeout(animateCounters, 900);
+</script>
+
+<div id='clearEffect'></div>
+
+<script>
+(function(){
+  const effect = document.getElementById('clearEffect');
+
+  function triggerClearEffect(){
+    effect.innerHTML = "";
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+
+    // Add flash
+    const flash = document.createElement('div');
+    flash.className = 'flash';
+    effect.appendChild(flash);
+
+    // Add particles
+    for(let i=0;i<60;i++){
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = (w/2) + "px";
+      p.style.top = (h/2) + "px";
+      const angle = Math.random()*2*Math.PI;
+      const dist = 200 + Math.random()*180;
+      const dx = Math.cos(angle)*dist + "px";
+      const dy = Math.sin(angle)*dist + "px";
+      p.style.setProperty('--dx', dx);
+      p.style.setProperty('--dy', dy);
+      effect.appendChild(p);
+    }
+
+    effect.style.display = "block";
+    setTimeout(()=>{ effect.style.display="none"; },650);
+  }
+
+  // Hook into your clear-records button action
+  const clearBtn = document.querySelector("#btnClearAll, .btn-clear-all");
+  if(clearBtn){
+    clearBtn.addEventListener('click', ()=>{
+      triggerClearEffect();
+    });
+  }
+
+})();
+</script>
+
 </body>
 </html>
 <style>
@@ -2770,4 +3416,3 @@ body{
 #dynamicIsland.di-hide {
   animation: islandShrink .28s ease-out forwards !important;
 }
-
