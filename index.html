@@ -2893,7 +2893,7 @@ function generatePDF(){
   const pageCount=doc.internal.getNumberOfPages();
   for(let i=1;i<=pageCount;i++){
       doc.setPage(i); doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(100,100,110);
-      doc.text('© 2025 XPO LOGISTICS – Informe interno',20,285);
+      doc.text('© 2026 XPO LOGISTICS – Informe interno',20,285);
       doc.setTextColor(60,90,180);
       doc.textWithLink('CODE.COM', 105, 285, { url: 'https://vbenyx.github.io/XPO/', align: 'center' });
       doc.setTextColor(100,100,110); doc.text('Página '+i+' de '+pageCount,190,285,{align:'right'});
